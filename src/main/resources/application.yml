@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: users
+  r2dbc:
+    url:  r2dbc:h2:mem:///testDb
+    username: test
+    password: test
+  sql:
+    init:
+      mode : embedded
+
+
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
