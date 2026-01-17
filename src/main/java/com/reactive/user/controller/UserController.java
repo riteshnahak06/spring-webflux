@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +30,17 @@ public class UserController {
                         .status(HttpStatus.CREATED)
                         .body(toDto(user)));
     }
+    @PostMapping("/create-users")
+    public Mono<ResponseEntity<List<UserDto>>> createAllUser(
+            @RequestBody Flux<CreateUserRequest> requestFlux) {
+
+        return requestFlux
+                .flatMap(userService::createUser)
+                .map(this::toDto)
+                .collectList()
+                .map(ResponseEntity::ok);
+    }
+
 
     @GetMapping("/findById/{id}")
     public Mono<ResponseEntity<UserDto>> findById(@PathVariable Integer id){
@@ -35,6 +48,8 @@ public class UserController {
                 .map(user -> ResponseEntity.ok(toDto(user)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
+
+
 
 
     private UserDto toDto(User user) {
