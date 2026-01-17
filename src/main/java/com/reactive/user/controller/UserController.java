@@ -9,12 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -33,7 +31,6 @@ public class UserController {
     @PostMapping("/create-users")
     public Mono<ResponseEntity<List<UserDto>>> createAllUser(
             @RequestBody Flux<CreateUserRequest> requestFlux) {
-
         return requestFlux
                 .flatMap(userService::createUser)
                 .map(this::toDto)
@@ -47,6 +44,14 @@ public class UserController {
         return userService.findUserById(id)
                 .map(user -> ResponseEntity.ok(toDto(user)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/fetchAll")
+    public Mono<ResponseEntity<List<UserDto>>> getAllUser(){
+        return userService.fetchAllUsers()
+                .map(this::toDto)
+                .collectList()
+                .map(ResponseEntity::ok);
     }
 
 

@@ -24,24 +24,11 @@ public class UserService {
         user.setPassword(createUserRequest.getPassword());
         return userRepository.save(user);
     }
-
-    public Mono<List<User>> createUsers(List<CreateUserRequest> requests) {
-
-        return Flux.fromIterable(requests)
-                .map(req -> {
-                    User user = new User();
-                    user.setFirstName(req.getFirstName());
-                    user.setLastName(req.getLastName());
-                    user.setEmail(req.getEmail());
-                    user.setPassword(req.getPassword());
-                    return user;
-                })
-                .flatMap(userRepository::save)
-                .collectList();
-    }
-
-
     public Mono<User> findUserById(Integer id){
         return userRepository.findById(id);
+    }
+
+    public Flux<User> fetchAllUsers(){
+        return userRepository.findAll();
     }
 }
