@@ -39,14 +39,15 @@ public class UserService {
                 .doOnSubscribe(s->log.info("Find By Id call started for id {} ",updateUserRequest.getId()))
                 .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
                 .flatMap(user -> {
+                    log.info("DB call started!");
                     user.setPassword(updateUserRequest.getPassword());
+                    log.info("Password set completed !");
                     return userRepository.save(user);
                 })
                 .map(user -> UpdateResponse.builder()
                         .id(user.getId())
                         .message("Update Successful !")
                         .build());
-
     }
 
 }
