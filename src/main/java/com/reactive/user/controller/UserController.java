@@ -1,10 +1,13 @@
 package com.reactive.user.controller;
 
 import com.reactive.user.dto.CreateUserRequest;
+import com.reactive.user.dto.UpdateResponse;
+import com.reactive.user.dto.UpdateUserRequest;
 import com.reactive.user.dto.UserDto;
 import com.reactive.user.entity.User;
 import com.reactive.user.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.swing.plaf.PanelUI;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -52,6 +57,13 @@ public class UserController {
                 .map(this::toDto)
                 .collectList()
                 .map(ResponseEntity::ok);
+    }
+
+    @PatchMapping("/updateUser")
+    public Mono<ResponseEntity<UpdateResponse>> updateUser(@RequestBody @Valid Mono<UpdateUserRequest> requestMono){
+        return requestMono
+                .flatMap(userService::updatePassword)
+                .map(updateResponse -> ResponseEntity.accepted().body(updateResponse));
     }
 
 
